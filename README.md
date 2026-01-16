@@ -35,7 +35,7 @@ docker build -t postgres-partman:17 .
 ## Data model
 
 - `accounts(account_id uuid primary key, created_at ...)`
-- `transactions(tx_id uuid, account_id uuid, created_at timestamp ...)` have composite PK: `tx_id, created_at`
+- `transactions(tx_id uuid, account_id uuid, created_at timestamp ...)` have composite PK: `(tx_id, created_at)`
 
 ## Partitioning
 The table is range-partitioned by the `created_at` column in this POC.
