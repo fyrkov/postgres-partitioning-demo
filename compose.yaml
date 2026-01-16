@@ -1,6 +1,7 @@
   services:
     postgres:
-      image: postgres:17
+      build: .
+      image: postgres-partman:17
       environment:
         POSTGRES_PASSWORD: secret
       ports:

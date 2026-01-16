@@ -8,7 +8,13 @@ This repository is a small demo of partitioning setup for PostgreSQL.
 * JDK >= 21
 * Docker
 
-Start DB:
+The gradle project requires a custom image of Postgres with the Partman extension for building.
+Build it as follows:
+```bash
+docker build -t postgres-partman:17 .
+```
+
+For running locally, start DB:
 ```bash
 docker compose up -d
 ```
@@ -68,9 +74,18 @@ create table transactions_withdrawal
 
 See https://www.postgresql.org/docs/current/ddl-partitioning.html#DDL-PARTITIONING-OVERVIEW
 
-## What is not in the scope of this POC
+## Partman
 
-Automated partitioning management
+Automated partitioning management extension `pg_partman` is added into the Postgres image (see `Dockerfile`).
+
+The extension itself is installed in the `partman` schema and is configured for partitioning of the `transactions` table.
+
+The extension takes care of creating new partitions over time, reducing the operation overhead of maintaining them manually.
+In addition to the partitioning itself, it also creates a cron job that runs daily the following procedure:
+```sql
+select partman.run_maintenance();
+```
+This can be done with the `pg_cron` extension.
 
 ## Partitioning gotchas
 

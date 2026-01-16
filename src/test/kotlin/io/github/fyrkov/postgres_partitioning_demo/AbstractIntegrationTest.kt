@@ -9,7 +9,9 @@ import org.testcontainers.utility.DockerImageName
 abstract class AbstractIntegrationTest {
 
     companion object {
-        private val image = DockerImageName.parse("postgres:17")
+        private val image = DockerImageName
+            .parse("postgres-partman:17")
+            .asCompatibleSubstituteFor("postgres")
 
         @JvmStatic
         @ServiceConnection

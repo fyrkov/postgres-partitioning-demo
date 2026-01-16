@@ -19,20 +19,24 @@ create table if not exists transactions (
 create index if not exists transactions_created_account_idx
     on transactions (created_at, account_id);
 
-create table transactions_2025_12
-    partition of transactions
-    for values from ('2025-12-01') to ('2026-01-01');
+-- Partman setup
+create schema if not exists partman;
+create extension if not exists pg_partman with schema partman;
 
-create table transactions_2026_01
-    partition of transactions
-    for values from ('2026-01-01') to ('2026-02-01');
+select partman.create_parent(
+               p_parent_table := 'public.transactions',
+               p_control      := 'created_at',
+               p_type         := 'range',
+               p_interval     := '1 month'
+       );
 
-create table transactions_default
-    partition of transactions
-    default;
+update partman.part_config
+set premake = 2
+where parent_table = 'public.transactions';
+
+select partman.run_maintenance();
 
 -- TEST DATA
-
 create extension if not exists pgcrypto;
 
 -- seed 100 accounts
