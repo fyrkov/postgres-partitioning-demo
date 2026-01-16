@@ -1,7 +1,7 @@
-package io.github.fyrkov.postgres_sharding_demo.controller
+package io.github.fyrkov.postgres_partitioning_demo.controller
 
-import io.github.fyrkov.postgres_sharding_demo.domain.Account
-import io.github.fyrkov.postgres_sharding_demo.repository.AccountRepository
+import io.github.fyrkov.postgres_partitioning_demo.domain.Account
+import io.github.fyrkov.postgres_partitioning_demo.repository.AccountRepository
 import org.springframework.web.bind.annotation.*
 import java.math.BigDecimal
 import java.util.*

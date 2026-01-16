@@ -1,7 +1,7 @@
-package io.github.fyrkov.postgres_sharding_demo.repository
+package io.github.fyrkov.postgres_partitioning_demo.repository
 
-import io.github.fyrkov.postgres_sharding_demo.domain.Transaction
-import io.github.fyrkov.postgres_sharding_demo.domain.TransactionId
+import io.github.fyrkov.postgres_partitioning_demo.domain.Transaction
+import io.github.fyrkov.postgres_partitioning_demo.domain.TransactionId
 import org.jooq.DSLContext
 import org.jooq.Record
 import org.springframework.stereotype.Repository

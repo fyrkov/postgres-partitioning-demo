@@ -1,7 +1,7 @@
-package io.github.fyrkov.postgres_sharding_demo.controller
+package io.github.fyrkov.postgres_partitioning_demo.controller
 
-import io.github.fyrkov.postgres_sharding_demo.AbstractIntegrationTest
-import io.github.fyrkov.postgres_sharding_demo.repository.AccountRepository
+import io.github.fyrkov.postgres_partitioning_demo.AbstractIntegrationTest
+import io.github.fyrkov.postgres_partitioning_demo.repository.AccountRepository
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired

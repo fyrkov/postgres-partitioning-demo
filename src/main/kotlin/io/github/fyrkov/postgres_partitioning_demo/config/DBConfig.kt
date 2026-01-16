@@ -1,4 +1,4 @@
-package io.github.fyrkov.postgres_sharding_demo.config
+package io.github.fyrkov.postgres_partitioning_demo.config
 
 import org.flywaydb.core.Flyway
 import org.springframework.boot.ApplicationRunner

@@ -1,4 +1,4 @@
-package io.github.fyrkov.postgres_sharding_demo.domain
+package io.github.fyrkov.postgres_partitioning_demo.domain
 
 import java.math.BigDecimal
 import java.time.Instant

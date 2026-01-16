@@ -1,4 +1,4 @@
-package io.github.fyrkov.postgres_sharding_demo
+package io.github.fyrkov.postgres_partitioning_demo
 
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.DynamicPropertyRegistry

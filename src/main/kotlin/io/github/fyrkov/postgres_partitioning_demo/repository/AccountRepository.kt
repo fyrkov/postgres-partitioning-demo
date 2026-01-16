@@ -1,6 +1,6 @@
-package io.github.fyrkov.postgres_sharding_demo.repository
+package io.github.fyrkov.postgres_partitioning_demo.repository
 
-import io.github.fyrkov.postgres_sharding_demo.domain.Account
+import io.github.fyrkov.postgres_partitioning_demo.domain.Account
 import org.jooq.DSLContext
 import org.jooq.Record
 import org.springframework.stereotype.Repository

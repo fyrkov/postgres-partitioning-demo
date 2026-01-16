@@ -1,10 +1,10 @@
-package io.github.fyrkov.postgres_sharding_demo
+package io.github.fyrkov.postgres_partitioning_demo
 
 import org.junit.jupiter.api.Test
 import org.springframework.boot.test.context.SpringBootTest
 
 @SpringBootTest
-class PostgresShardingDemoApplicationTests : AbstractIntegrationTest() {
+class PostgresPartitioningDemoApplicationTests : AbstractIntegrationTest() {
 
 	@Test
 	fun contextLoads() {

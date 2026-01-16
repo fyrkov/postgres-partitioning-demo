@@ -1,11 +1,11 @@
-package io.github.fyrkov.postgres_sharding_demo
+package io.github.fyrkov.postgres_partitioning_demo
 
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
 
 @SpringBootApplication
-class PostgresShardingDemoApplication
+class PostgresPartitioningDemoApplication
 
 fun main(args: Array<String>) {
-	runApplication<PostgresShardingDemoApplication>(*args)
+	runApplication<PostgresPartitioningDemoApplication>(*args)
 }

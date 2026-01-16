@@ -1,12 +1,11 @@
-package io.github.fyrkov.postgres_sharding_demo.controller
+package io.github.fyrkov.postgres_partitioning_demo.controller
 
-import io.github.fyrkov.postgres_sharding_demo.AbstractIntegrationTest
+import io.github.fyrkov.postgres_partitioning_demo.AbstractIntegrationTest
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import java.math.BigDecimal
-import java.util.*
 
 class TransactionControllerIntegrationTest(
     @Autowired val transactionController: TransactionController,
