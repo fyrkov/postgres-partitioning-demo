@@ -2,6 +2,11 @@
 
 This repository is a small demo of partitioning setup for PostgreSQL.
 
+## What this POC demonstrates
+
+- PostgreSQL table partitioning by range
+- Usage of `pg_partman` extension for automated partition management
+ 
 ## How to run locally
 
 ### Dependencies
@@ -26,10 +31,6 @@ For running tests the gradle project requires a custom image of Postgres with th
 ```bash
 docker build -t postgres-partman:17 .
 ```
-
-## What this POC demonstrates
-
-- PostgreSQL table partitioning by range
 
 ## Data model
 
