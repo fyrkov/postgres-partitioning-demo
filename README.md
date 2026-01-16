@@ -1,6 +1,6 @@
 # Demo project for Postgres Partitioning
 
-This repository is a small Postgres + Spring Boot demo of partitioning setup for PostgreSQL.
+This repository is a small demo of partitioning setup for PostgreSQL.
 
 ## How to run locally
 
@@ -30,25 +30,71 @@ Access the app at http://localhost:8080/
 - `accounts(account_id uuid primary key, created_at ...)`
 - `transactions(tx_id uuid, account_id uuid, created_at timestamp ...)` have composite PK: `tx_id, created_at`
 
+## Partitioning
 The table is range-partitioned by the `created_at` column in this POC.
 
-Other alternatives:
-* range partitioning
-* hash partitioning
-* list partitioning
+### Partitioning options
+
+#### range partitioning
+```sql
+create table transactions ... partition by range (created_at);
+
+create table transactions_2026_01
+    partition of transactions for values from ('2026-01-01') to ('2026-02-01');
+
+create table transactions_default
+    partition of transactions default;
+```
+#### hash partitioning
+```sql
+create table transactions ... partition by hash (account_id);
+
+create table transactions_p0
+    partition of transactions for values with (modulus 2, remainder 0);
+
+create table transactions_p1
+    partition of transactions for values with (modulus 2, remainder 1);
+```
+#### list partitioning
+```sql
+create table transactions ... partition by list (tx_type);
+
+create table transactions_deposit
+  partition of transactions for values in ('DEPOSIT');
+
+create table transactions_withdrawal
+    partition of transactions for values in ('WITHDRAWAL');
+```
 
 See https://www.postgresql.org/docs/current/ddl-partitioning.html#DDL-PARTITIONING-OVERVIEW
 
-## What is not in the scope of this POC TODO
+## What is not in the scope of this POC
 
-This is intentionally out of scope for the POC:
+Automated partitioning management
 
-- cross-shard queries / joins
-- distributed multi-shard transactions
-- resharding / moving data between shards
-- global uniqueness constraints across shards
-- high availability (replicas / Patroni)
+## Partitioning gotchas
 
-## Other partitioning options (beyond this POC) TODO
+Partitioning breaks global uniqueness at the parent-table level.
+Uniqueness can only be enforced if the unique constraint (or primary key) includes the partition key.
 
-### 1) 
+Efficient queries must include the partition key in the predicate to enable partition pruning.
+
+Indexes are local per partition.
+
+Indexes do not strictly need to include the partition key, but in many scenarios it is still useful.
+
+Rule of thumb: partitioning usually starts to make sense at around ~100 gb.
+
+A `default` partition is used for rows that don’t match any defined partition range/list.
+If it’s not present, inserts with no matching partition will fail.
+
+Partitioning can simplify maintenance by:
+* improving data locality (hot vs cold data separated)
+* reducing index size per partition (but total index size across all partitions may increase)
+* improving bloat control (bloat contained inside partitions; old partitions become mostly read-only)
+* making vacuum/analyze more targeted (runs per partition; less work on untouched partitions)
+* simplifying retention (old data removed by dropping/truncating whole partitions instead of running huge deletes)
+
+Some partitioning strategies work well together with partial indexes, e.g. an outbox table partiotioned into indexed `published` and un-indexed `unpublished`.
+
+See also https://www.postgresql.org/docs/current/ddl-partitioning.html#DDL-PARTITIONING-DECLARATIVE-BEST-PRACTICES
