@@ -79,29 +79,29 @@ See https://www.postgresql.org/docs/current/ddl-partitioning.html#DDL-PARTITIONI
 
 Automated partitioning management extension `pg_partman` is added into the Postgres image (see `Dockerfile`).
 
-The extension itself is installed in the `partman` schema and is configured for partitioning of the `transactions` table.
+The extension itself is installed in the `partman` schema and is configured for partitioning of the `transactions` table monthly.
 
-The extension takes care of creating new partitions over time, reducing the operation overhead of maintaining them manually.
-In addition to the partitioning itself, it also creates a cron job that runs daily the following procedure:
+The extension takes care of creating new partitions over time, reducing the operational overhead.
+
+In addition to the partitioning configuration, it also requires a cron job that should run daily the following function:
 ```sql
 select partman.run_maintenance();
 ```
 This can be done with the `pg_cron` extension.
 
-Partman can deal only with the range and list partitioning strategies.
+:exclamation: Partman can deal only with the range and list partitioning strategies.
 
 ## Partitioning gotchas
 
-Partitioning breaks global uniqueness at the parent-table level.
-Uniqueness can only be enforced if the unique constraint (or primary key) includes the partition key.
+Partitioning breaks global uniqueness of PKs and unique indexes at the parent-table level.
+This is because indexes are local per partition.
+Uniqueness can be enforced if the PK or unique includes the partition key.
 
 Efficient queries must include the partition key in the predicate to enable partition pruning.
 
-Indexes are local per partition.
+Indexes do not strictly need to include the partition key, but in many scenarios it is useful.
 
-Indexes do not strictly need to include the partition key, but in many scenarios it is still useful.
-
-Rule of thumb: partitioning usually starts to make sense at around ~100 gb.
+Rule of thumb: partitioning usually starts to make sense at around ~100 gb table size.
 
 A `default` partition is used for rows that don’t match any defined partition range/list.
 If it’s not present, inserts with no matching partition will fail.
