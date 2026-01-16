@@ -7,12 +7,11 @@ create table if not exists accounts (
 );
 
 create table if not exists transactions (
+    tx_id uuid primary key,
     account_id uuid not null,
-    tx_id uuid not null,
     tx_type text not null,
     amount numeric(18, 2) not null,
     created_at timestamptz not null default now(),
-    primary key (account_id, tx_id),
     foreign key (account_id) references accounts(account_id)
 );
 

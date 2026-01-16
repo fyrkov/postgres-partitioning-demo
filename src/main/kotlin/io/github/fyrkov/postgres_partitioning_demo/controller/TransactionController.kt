@@ -1,7 +1,6 @@
 package io.github.fyrkov.postgres_partitioning_demo.controller
 
 import io.github.fyrkov.postgres_partitioning_demo.domain.Transaction
-import io.github.fyrkov.postgres_partitioning_demo.domain.TransactionId
 import io.github.fyrkov.postgres_partitioning_demo.repository.TransactionRepository
 import org.springframework.web.bind.annotation.*
 import java.math.BigDecimal
@@ -18,10 +17,8 @@ class TransactionController(
     ): Transaction {
         val accountId = request.accountId ?: throw IllegalArgumentException("accountId is required")
         val transaction = Transaction(
-            id = TransactionId(
-                accountId = accountId,
-                txId = UUID.randomUUID()
-            ),
+            id = UUID.randomUUID(),
+            accountId = accountId,
             txType = request.txType,
             amount = request.amount
         )

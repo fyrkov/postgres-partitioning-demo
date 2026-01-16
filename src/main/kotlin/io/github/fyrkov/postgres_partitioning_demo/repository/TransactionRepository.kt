@@ -1,7 +1,6 @@
 package io.github.fyrkov.postgres_partitioning_demo.repository
 
 import io.github.fyrkov.postgres_partitioning_demo.domain.Transaction
-import io.github.fyrkov.postgres_partitioning_demo.domain.TransactionId
 import org.jooq.DSLContext
 import org.jooq.Record
 import org.springframework.stereotype.Repository
@@ -19,8 +18,8 @@ class TransactionRepository(
       insert into transactions(account_id, tx_id, tx_type, amount)
       values (?, ?, ?, ?)
       """.trimIndent(),
-            tx.id.accountId,
-            tx.id.txId,
+            tx.accountId,
+            tx.id,
             tx.txType,
             tx.amount,
         )
@@ -50,25 +49,20 @@ class TransactionRepository(
             .map { r -> mapToTransaction(r) }
             .sortedByDescending { it.createdAt }
 
-    fun findById(id: TransactionId): Transaction? = findById(id.accountId, id.txId)
-
-    fun findById(accountId: UUID, txId: UUID): Transaction? =
+    fun findById(txId: UUID): Transaction? =
         dsl.fetchOne(
             """
                 select account_id, tx_id, tx_type, amount, created_at
                 from transactions
-                where account_id = ? and tx_id = ?
+                where tx_id = ?
                 """.trimIndent(),
-            accountId,
             txId
         )
             ?.let { r -> mapToTransaction(r) }
 
     private fun mapToTransaction(r: Record): Transaction = Transaction(
-        id = TransactionId(
-            accountId = r.get("account_id", UUID::class.java),
-            txId = r.get("tx_id", UUID::class.java),
-        ),
+        id = r.get("tx_id", UUID::class.java),
+        accountId = r.get("account_id", UUID::class.java),
         txType = r.get("tx_type", String::class.java),
         amount = r.get("amount", BigDecimal::class.java),
         createdAt = r.get("created_at", Instant::class.java),

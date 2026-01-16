@@ -8,11 +8,11 @@ This repository is a small Postgres + Spring Boot demo of partitioning setup for
 * JDK >= 21
 * Docker
 
-Start DBs:
+Start DB:
 ```bash
 docker compose up -d
 ```
-Fixed ports 15433, 15434 are used which must be available!
+Fixed port 15433 is used which must be available!
 
 Start the app:
 ```

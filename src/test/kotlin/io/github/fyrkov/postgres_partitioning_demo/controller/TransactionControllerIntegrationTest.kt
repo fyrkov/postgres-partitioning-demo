@@ -27,7 +27,7 @@ class TransactionControllerIntegrationTest(
         val created = transactionController.createTransaction(request)
 
         // Then
-        assertEquals(accountId, created.id.accountId)
+        assertEquals(accountId, created.accountId)
         assertEquals("DEPOSIT", created.txType)
         assertEquals(BigDecimal("100.50"), created.amount)
 
@@ -36,11 +36,11 @@ class TransactionControllerIntegrationTest(
 
         // Then
         assertTrue(transactions.isNotEmpty())
-        assertTrue(transactions.any { it.id.txId == created.id.txId })
+        assertTrue(transactions.any { it.id == created.id })
 
         // Test Global Transactions (all)
         val allTransactions = transactionController.listTransactions(null)
         assertTrue(allTransactions.isNotEmpty())
-        assertTrue(allTransactions.any { it.id.txId == created.id.txId })
+        assertTrue(allTransactions.any { it.id == created.id })
     }
 }

@@ -3,7 +3,6 @@ package io.github.fyrkov.postgres_partitioning_demo.repository
 import io.github.fyrkov.postgres_partitioning_demo.AbstractIntegrationTest
 import io.github.fyrkov.postgres_partitioning_demo.domain.Account
 import io.github.fyrkov.postgres_partitioning_demo.domain.Transaction
-import io.github.fyrkov.postgres_partitioning_demo.domain.TransactionId
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
@@ -24,12 +23,14 @@ class TransactionRepositoryIntegrationTest(
         accountRepository.save(Account(accountId, "John", "Doe", BigDecimal.ZERO))
 
         val tx1 = Transaction(
-            id = TransactionId(accountId, UUID.randomUUID()),
+            id = UUID.randomUUID(),
+            accountId = accountId,
             txType = "DEPOSIT",
             amount = BigDecimal("100.00")
         )
         val tx2 = Transaction(
-            id = TransactionId(accountId, UUID.randomUUID()),
+            id = UUID.randomUUID(),
+            accountId = accountId,
             txType = "WITHDRAWAL",
             amount = BigDecimal("50.00")
         )
