@@ -8,12 +8,6 @@ This repository is a small demo of partitioning setup for PostgreSQL.
 * JDK >= 21
 * Docker
 
-The gradle project requires a custom image of Postgres with the Partman extension for building.
-Build it as follows:
-```bash
-docker build -t postgres-partman:17 .
-```
-
 For running locally, start DB:
 ```bash
 docker compose up -d
@@ -26,6 +20,12 @@ Start the app:
 ```
 
 Access the app at http://localhost:8080/
+
+
+For running tests the gradle project requires a custom image of Postgres with the Partman extension, which can be built like:
+```bash
+docker build -t postgres-partman:17 .
+```
 
 ## What this POC demonstrates
 
