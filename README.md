@@ -41,7 +41,7 @@ The table is range-partitioned by the `created_at` column in this POC.
 
 ### Partitioning options
 
-#### range partitioning
+#### range partitioning manually
 ```sql
 create table transactions ... partition by range (created_at);
 
@@ -86,6 +86,8 @@ In addition to the partitioning itself, it also creates a cron job that runs dai
 select partman.run_maintenance();
 ```
 This can be done with the `pg_cron` extension.
+
+Partman can deal only with the range and list partitioning strategies.
 
 ## Partitioning gotchas
 
