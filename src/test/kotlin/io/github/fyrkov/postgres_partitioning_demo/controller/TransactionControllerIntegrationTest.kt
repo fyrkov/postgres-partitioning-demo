@@ -32,14 +32,14 @@ class TransactionControllerIntegrationTest(
         assertEquals(BigDecimal("100.50"), created.amount)
 
         // And When
-        val transactions = transactionController.listTransactions(listOf(accountId))
+        val transactions = transactionController.listTransactions(listOf(accountId), limit = 100)
 
         // Then
         assertTrue(transactions.isNotEmpty())
         assertTrue(transactions.any { it.id == created.id })
 
         // Test Global Transactions (all)
-        val allTransactions = transactionController.listTransactions(null)
+        val allTransactions = transactionController.listTransactions(null, limit = 10000)
         assertTrue(allTransactions.isNotEmpty())
         assertTrue(allTransactions.any { it.id == created.id })
     }

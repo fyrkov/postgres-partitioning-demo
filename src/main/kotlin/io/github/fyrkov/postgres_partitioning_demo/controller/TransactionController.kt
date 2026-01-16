@@ -26,13 +26,12 @@ class TransactionController(
     }
 
     @GetMapping
-    fun listTransactions(@RequestParam(required = false) accountIds: List<UUID>?): List<Transaction> {
-        return if (accountIds.isNullOrEmpty()) {
-            transactionRepository.findAll()
-        } else {
-            accountIds.flatMap { transactionRepository.findAllByAccountId(it) }
-                .sortedByDescending { it.createdAt }
-        }
+    fun listTransactions(
+        @RequestParam(required = false) accountIds: List<UUID>? = null,
+        @RequestParam(defaultValue = "10") limit: Int = 10,
+        @RequestParam(defaultValue = "0") offset: Long = 0
+    ): List<Transaction> {
+        return transactionRepository.findAll(accountIds, limit, offset)
     }
 }
 

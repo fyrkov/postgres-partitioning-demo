@@ -23,8 +23,11 @@ class AccountController(
     }
 
     @GetMapping
-    fun listAccounts(): List<Account> {
-        return accountRepository.findAll()
+    fun listAccounts(
+        @RequestParam(defaultValue = "10") limit: Int = 10,
+        @RequestParam(defaultValue = "0") offset: Long = 0
+    ): List<Account> {
+        return accountRepository.findAll(limit, offset)
     }
 }
 

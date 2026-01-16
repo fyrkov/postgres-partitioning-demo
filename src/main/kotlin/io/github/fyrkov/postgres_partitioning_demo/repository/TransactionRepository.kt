@@ -26,28 +26,28 @@ class TransactionRepository(
         return tx
     }
 
-    fun findAllByAccountId(accountId: UUID): List<Transaction> =
-        dsl.fetch(
-            """
-        select account_id, tx_id, tx_type, amount, created_at
-        from transactions
-        where account_id = ?
-        order by created_at desc, tx_id
-        """.trimIndent(),
-            accountId
-        )
-            .map { r -> mapToTransaction(r) }
+    fun findAll(accountIds: List<UUID>? = null, limit: Int = 10, offset: Long = 0): List<Transaction> {
+        val query = StringBuilder("""
+            select account_id, tx_id, tx_type, amount, created_at
+            from transactions
+        """.trimIndent())
 
-    fun findAll(): List<Transaction> =
-        dsl.fetch(
-            """
-                select account_id, tx_id, tx_type, amount, created_at
-                from transactions
-                order by created_at desc, tx_id
-                """.trimIndent()
-        )
+        val params = mutableListOf<Any>()
+        if (!accountIds.isNullOrEmpty()) {
+            query.append("\nwhere account_id in (")
+            query.append(accountIds.joinToString(",") { "?" })
+            query.append(")")
+            params.addAll(accountIds)
+        }
+
+        query.append("\norder by created_at desc, tx_id")
+        query.append("\nlimit ? offset ?")
+        params.add(limit)
+        params.add(offset)
+
+        return dsl.fetch(query.toString(), *params.toTypedArray())
             .map { r -> mapToTransaction(r) }
-            .sortedByDescending { it.createdAt }
+    }
 
     fun findById(txId: UUID): Transaction? =
         dsl.fetchOne(

@@ -40,7 +40,7 @@ class TransactionRepositoryIntegrationTest(
         transactionRepository.insert(tx2)
 
         // Then
-        val allTransactions = transactionRepository.findAllByAccountId(accountId)
+        val allTransactions = transactionRepository.findAll(listOf(accountId))
         assertTrue(allTransactions.any { it.id == tx1.id })
         assertTrue(allTransactions.any { it.id == tx2.id })
     }

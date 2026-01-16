@@ -30,8 +30,12 @@ class AccountRepository(
             )
             ?.let { r -> mapRecordToAccount(r) }
 
-    fun findAll(): List<Account> =
-            dsl.fetch("select * from accounts")
+    fun findAll(limit: Int = 10, offset: Long = 0): List<Account> =
+            dsl.fetch(
+                "select * from accounts order by created_at desc, account_id limit ? offset ?",
+                limit,
+                offset
+            )
                 .map { r -> mapRecordToAccount(r) }
 
     private fun mapRecordToAccount(r: Record): Account = Account(
