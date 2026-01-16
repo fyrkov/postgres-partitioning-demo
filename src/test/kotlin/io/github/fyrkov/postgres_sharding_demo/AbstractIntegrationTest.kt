@@ -13,32 +13,21 @@ abstract class AbstractIntegrationTest {
         private val image = DockerImageName.parse("postgres:17")
 
         @JvmStatic
-        val shard1: PostgreSQLContainer = PostgreSQLContainer(image)
+        val postgresContainer: PostgreSQLContainer = PostgreSQLContainer(image)
             .withDatabaseName("postgres")
             .withUsername("postgres")
             .withPassword("secret")
 
-        @JvmStatic
-        val shard2: PostgreSQLContainer = PostgreSQLContainer(image)
-            .withDatabaseName("postgres")
-            .withUsername("postgres")
-            .withPassword("secret")
-
-        init {
-            shard1.start()
-            shard2.start()
+       init {
+            postgresContainer.start()
         }
 
         @JvmStatic
         @DynamicPropertySource
         fun registerProps(registry: DynamicPropertyRegistry) {
-            registry.add("postgres.shard1.datasource.url") { shard1.jdbcUrl }
-            registry.add("postgres.shard1.datasource.username") { shard1.username }
-            registry.add("postgres.shard1.datasource.password") { shard1.password }
-
-            registry.add("postgres.shard2.datasource.url") { shard2.jdbcUrl }
-            registry.add("postgres.shard2.datasource.username") { shard2.username }
-            registry.add("postgres.shard2.datasource.password") { shard2.password }
+            registry.add("spring.datasource.url") { postgresContainer.jdbcUrl }
+            registry.add("spring.datasource.username") { postgresContainer.username }
+            registry.add("spring.datasource.password") { postgresContainer.password }
         }
     }
 }

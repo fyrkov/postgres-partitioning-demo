@@ -2,6 +2,8 @@ package io.github.fyrkov.postgres_sharding_demo.repository
 
 import io.github.fyrkov.postgres_sharding_demo.domain.Transaction
 import io.github.fyrkov.postgres_sharding_demo.domain.TransactionId
+import org.jooq.DSLContext
+import org.jooq.Record
 import org.springframework.stereotype.Repository
 import java.math.BigDecimal
 import java.time.Instant
@@ -9,10 +11,10 @@ import java.util.*
 
 @Repository
 class TransactionRepository(
-    private val shardsRouter: ShardsRouter,
+    private val dsl: DSLContext,
 ) {
     fun insert(tx: Transaction): Transaction {
-        shardsRouter.shardFor(tx.id.accountId).execute(
+        dsl.execute(
             """
       insert into transactions(account_id, tx_id, tx_type, amount)
       values (?, ?, ?, ?)
@@ -26,72 +28,50 @@ class TransactionRepository(
     }
 
     fun findAllByAccountId(accountId: UUID): List<Transaction> =
-        shardsRouter.shardFor(accountId)
-            .fetch(
-                """
+        dsl.fetch(
+            """
         select account_id, tx_id, tx_type, amount, created_at
         from transactions
         where account_id = ?
         order by created_at desc, tx_id
         """.trimIndent(),
-                accountId
-            )
-            .map { r ->
-                Transaction(
-                    id = TransactionId(
-                        accountId = r.get("account_id", UUID::class.java),
-                        txId = r.get("tx_id", UUID::class.java),
-                    ),
-                    txType = r.get("tx_type", String::class.java),
-                    amount = r.get("amount", BigDecimal::class.java),
-                    createdAt = r.get("created_at", Instant::class.java),
-                )
-            }
+            accountId
+        )
+            .map { r -> mapToTransaction(r) }
 
     fun findAll(): List<Transaction> =
-        shardsRouter.allShards().flatMap { dsl ->
-            dsl.fetch(
-                """
+        dsl.fetch(
+            """
                 select account_id, tx_id, tx_type, amount, created_at
                 from transactions
                 order by created_at desc, tx_id
                 """.trimIndent()
-            ).map { r ->
-                Transaction(
-                    id = TransactionId(
-                        accountId = r.get("account_id", UUID::class.java),
-                        txId = r.get("tx_id", UUID::class.java),
-                    ),
-                    txType = r.get("tx_type", String::class.java),
-                    amount = r.get("amount", BigDecimal::class.java),
-                    createdAt = r.get("created_at", Instant::class.java),
-                )
-            }
-        }.sortedByDescending { it.createdAt }
+        )
+            .map { r -> mapToTransaction(r) }
+            .sortedByDescending { it.createdAt }
 
     fun findById(id: TransactionId): Transaction? = findById(id.accountId, id.txId)
 
     fun findById(accountId: UUID, txId: UUID): Transaction? =
-        shardsRouter.shardFor(accountId)
-            .fetchOne(
-                """
+        dsl.fetchOne(
+            """
                 select account_id, tx_id, tx_type, amount, created_at
                 from transactions
                 where account_id = ? and tx_id = ?
                 """.trimIndent(),
-                accountId,
-                txId
-            )
-            ?.let { r ->
-                Transaction(
-                    id = TransactionId(
-                        accountId = r.get("account_id", UUID::class.java),
-                        txId = r.get("tx_id", UUID::class.java),
-                    ),
-                    txType = r.get("tx_type", String::class.java),
-                    amount = r.get("amount", BigDecimal::class.java),
-                    createdAt = r.get("created_at", Instant::class.java),
-                )
-            }
+            accountId,
+            txId
+        )
+            ?.let { r -> mapToTransaction(r) }
+
+    private fun mapToTransaction(r: Record): Transaction = Transaction(
+        id = TransactionId(
+            accountId = r.get("account_id", UUID::class.java),
+            txId = r.get("tx_id", UUID::class.java),
+        ),
+        txType = r.get("tx_type", String::class.java),
+        amount = r.get("amount", BigDecimal::class.java),
+        createdAt = r.get("created_at", Instant::class.java),
+    )
 
 }

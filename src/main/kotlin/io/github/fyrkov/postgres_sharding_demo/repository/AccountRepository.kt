@@ -1,6 +1,7 @@
 package io.github.fyrkov.postgres_sharding_demo.repository
 
 import io.github.fyrkov.postgres_sharding_demo.domain.Account
+import org.jooq.DSLContext
 import org.jooq.Record
 import org.springframework.stereotype.Repository
 import java.math.BigDecimal
@@ -9,10 +10,10 @@ import java.util.*
 
 @Repository
 class AccountRepository(
-    private val shardsRouter: ShardsRouter,
+    private val dsl: DSLContext,
 ) {
     fun save(account: Account): Account {
-        shardsRouter.shardFor(account.accountId).execute(
+        dsl.execute(
             "insert into accounts(account_id, first_name, last_name, balance) values (?, ?, ?, ?)",
             account.accountId,
             account.firstName,
@@ -23,18 +24,15 @@ class AccountRepository(
     }
 
     fun findById(accountId: UUID): Account? =
-        shardsRouter.shardFor(accountId)
-            .fetchOne(
+        dsl.fetchOne(
                 "select * from accounts where account_id = ?",
                 accountId
             )
             ?.let { r -> mapRecordToAccount(r) }
 
     fun findAll(): List<Account> =
-        shardsRouter.allShards().flatMap { dsl ->
             dsl.fetch("select * from accounts")
                 .map { r -> mapRecordToAccount(r) }
-        }
 
     private fun mapRecordToAccount(r: Record): Account = Account(
         accountId = r.get("account_id", UUID::class.java),
